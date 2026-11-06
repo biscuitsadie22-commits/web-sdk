@@ -143,7 +143,14 @@ export function makeTwinImpactPreviewFrames(bookValue: unknown): TwinImpactPrevi
 				break;
 			case 'mysteryReveal':
 				mystery = nonemptyString(event.result, 'Mystery outcome');
-				board = boardReelMajor(event.activationBoard, 'reel-major');
+				// The Math SDK legitimately omits an activation board for some
+				// mystery results. Reveal the selected feature now; its first
+				// bonusSpin will populate the reels when one is available.
+				if (event.activationBoard != null) {
+					// The actual Math SDK exports this in 3-row x 5-column order,
+					// just like a reelStop and a bonusSpin board.
+					board = boardReelMajor(event.activationBoard, 'row-major');
+				}
 				break;
 			case 'reelStop':
 				board = boardReelMajor(event.board, 'row-major');

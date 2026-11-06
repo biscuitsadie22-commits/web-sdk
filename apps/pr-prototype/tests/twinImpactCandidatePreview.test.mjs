@@ -8,15 +8,20 @@ import {
 	oneSpinSampleFrames,
 } from '../src/stories/data/twinImpactCandidatePreview.ts';
 
-test('Twin Strike keeps gold positions and ladder visible between bonus spins', () => {
+test('Twin Strike keeps its line Ladder and sticky Wilds visible between bonus spins', () => {
 	const [first, second, third] = twinStrikeSampleFrames.filter((frame) => frame.type === 'bonusSpin');
-	assert.equal(first.goldenGrid[1][1], 4);
-	assert.equal(second.goldenGrid[1][1], 4);
-	assert.equal(third.goldenGrid[1][1], 4);
-	assert.equal(third.goldenGrid[0][2], 2);
+	assert.ok([first, second, third].every((frame) => frame.goldenGrid === null));
 	assert.deepEqual([first.ladderMultiplier, second.ladderMultiplier, third.ladderMultiplier], [2, 4, 8]);
 	assert.ok([first, second, third].every((frame) => frame.strikeWilds[0].sticky));
 	assert.equal(twinStrikeSampleFrames.at(-1).payoutMultiplier, 6750);
+});
+
+test('Golden Impact keeps its cell-specific Golden Grid upgrades across spins', () => {
+	const [first, second] = mysterySampleFrames.filter((frame) => frame.type === 'bonusSpin');
+	assert.equal(first.goldenGrid[1][1], 4);
+	assert.equal(second.goldenGrid[1][1], 4);
+	assert.equal(second.goldenGrid[0][2], 2);
+	assert.equal(first.ladderMultiplier, null);
 });
 
 test('Mystery outcome is concealed until the reveal event', () => {

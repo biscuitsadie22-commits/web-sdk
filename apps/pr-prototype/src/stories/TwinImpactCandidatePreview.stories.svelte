@@ -12,7 +12,7 @@
 	} from './data/twinImpactCandidatePreview';
 </script>
 
-<Story name="Twin Strike: sticky Golden Grid and Ladder">
+<Story name="Twin Strike: sticky Wilds and Ladder">
 	<TwinImpactCandidatePreview frames={twinStrikeSampleFrames} />
 </Story>
 

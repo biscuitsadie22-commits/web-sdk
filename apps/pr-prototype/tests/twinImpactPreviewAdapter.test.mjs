@@ -47,12 +47,31 @@ test('persists Golden Grid upgrades and Ladder between bonus frames', () => {
 test('does not reveal Mystery selection before mysteryReveal', () => {
 	const frames = makeTwinImpactPreviewFrames(book([
 		{ type: 'roundStart', mode: 'mystery_buy', cost: 485 },
-		{ type: 'mysteryReveal', result: 'Twin Strike', activationBoard: Array.from({ length: 5 }, () => ['H1', 'H2', 'H3']) },
+		{ type: 'mysteryReveal', result: 'Twin Strike', activationBoard: rows },
 		{ type: 'roundSettle', payoutMultiplier: 0 },
 	]));
 	assert.equal(frames[0].mysteryResult, null);
 	assert.equal(frames[1].mysteryResult, 'Twin Strike');
-	assert.deepEqual(frames[1].board[0], ['H1', 'H2', 'H3']);
+	assert.deepEqual(frames[1].board[0], ['H1', 'L1', 'L2']);
+});
+
+test('permits real Mystery reveals without a separate activation board', () => {
+	const frames = makeTwinImpactPreviewFrames(book([
+		{ type: 'roundStart', mode: 'mystery_buy', cost: 485 },
+		{ type: 'mysteryReveal', result: 'Golden Impact', activationBoard: null },
+		{ type: 'bonusStart', initialFreeSpins: 1 },
+		{ type: 'bonusSpin', spin: {
+			board: rows,
+			golden_grid_before: null,
+			golden_grid_after: null,
+			ladder_active: false,
+		} },
+		{ type: 'roundSettle', payoutMultiplier: 0 },
+	]));
+	assert.equal(frames[0].mysteryResult, null);
+	assert.equal(frames[1].mysteryResult, 'Golden Impact');
+	assert.equal(frames[1].board, null);
+	assert.deepEqual(frames[3].board[1], ['H2', 'SW', 'L3']);
 });
 
 test('rejects Scatter symbols in one-spin feature purchases', () => {

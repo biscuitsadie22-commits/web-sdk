@@ -73,7 +73,16 @@
 		<div class="playfield">
 			<div class="reels" role="group" aria-label="Five reels of three symbols">
 				{#each reels as reel}
-					<div class="reel" role="group" aria-label={`Reel ${reel + 1}`}>
+					<div
+						class="reel"
+						class:ladder-charged={current.ladderMultiplier !== null}
+						class:ladder-upgraded={current.ladderMultiplier !== null && current.ladderMultiplier > (prior?.ladderMultiplier ?? 0)}
+						role="group"
+						aria-label={`Reel ${reel + 1}`}
+					>
+						{#if current.ladderMultiplier !== null}
+							<span class="ladder-reel-marker">LADDER {current.ladderMultiplier}×</span>
+						{/if}
 						{#each positions as row}
 							{@const level = gridAt(reel, row)}
 							{@const wild = strikeAt(reel, row)}
@@ -144,7 +153,11 @@
 	.reveal { padding: 9px 14px; border-radius: 9px; border: 1px solid #ffc65e; color: #ffdf9b; background: #674823; font-size: 13px; font-weight: 800; animation: reveal 0.5s ease-out; }
 	.playfield { display: grid; grid-template-columns: minmax(0, 1fr) 186px; gap: 18px; }
 	.reels { min-width: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; padding: 13px; border: 3px solid #3a506e; border-radius: 14px; background: #090e1b; }
-	.reel { display: grid; grid-template-rows: repeat(3, minmax(93px, 1fr)); gap: 9px; }
+	.reel { position: relative; display: grid; grid-template-rows: repeat(3, minmax(93px, 1fr)); gap: 9px; }
+	.reel.ladder-charged { outline: 2px solid #ffce5c9f; outline-offset: -2px; border-radius: 10px; }
+	.reel.ladder-charged .cell:not(.golden) { border-color: #ffce5cd6; box-shadow: inset 0 0 16px #ffcd5d2b, 0 0 9px #ffb63f40; }
+	.ladder-reel-marker { position: absolute; z-index: 9; top: 3px; left: 3px; max-width: calc(100% - 6px); padding: 4px 5px; border: 2px solid #ffe5a1; border-radius: 6px; color: #fff8d0; background: #402709f7; box-shadow: 0 0 16px #ffc440d4, inset 0 0 8px #ffd46740; font-size: clamp(8px, 1vw, 13px); font-weight: 900; line-height: 1; pointer-events: none; text-shadow: 0 0 9px #ffc247; white-space: nowrap; }
+	.reel.ladder-upgraded .ladder-reel-marker { animation: ladder-level-up 1.1s ease-out; }
 	.cell { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; border-radius: 12px; border: 2px solid #364d68; background: radial-gradient(ellipse at 50% 32%, #4b78b747, transparent 72%), linear-gradient(150deg, #202f4c, #0d1528); }
 	.cell.golden { border: 3px solid #ffc44e; background: linear-gradient(145deg, #5a4321, #1b2434); box-shadow: inset 0 0 18px #a87822a8, 0 0 14px #f7b62f65; }
 	.cell.strike-symbol:not(.golden) { border-color: #6feaff; box-shadow: inset 0 0 16px #37bdff66, 0 0 13px #7deaff66; }
@@ -169,6 +182,7 @@
 	.counter { margin-left: auto; color: #aabbd4; font-size: 12px; }
 	@keyframes upgrade { 0% { box-shadow: 0 0 0 #ffcf63; transform: scale(0.93); } 35% { box-shadow: 0 0 38px #ffcf63; transform: scale(1.035); } 100% { box-shadow: inset 0 0 18px #a87822a8, 0 0 14px #f7b62f65; transform: scale(1); } }
 	@keyframes reveal { from { opacity: 0.2; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+	@keyframes ladder-level-up { 0%, 100% { filter: brightness(1); } 38% { filter: brightness(1.6); box-shadow: 0 0 30px #ffd153f4, inset 0 0 15px #ffe89a73; } }
 	@media (max-width: 750px) { .preview { margin: 8px; padding: 14px; } .playfield { grid-template-columns: 1fr; } .side-panel { display: grid; grid-template-columns: 1fr 1fr; align-items: center; } .reels { gap: 4px; padding: 5px; } .reel { gap: 4px; grid-template-rows: repeat(3, minmax(72px, 1fr)); } .golden-level { font-size: 7px; } .strike { font-size: 7px; } .counter { margin-left: 0; } }
-	@media (prefers-reduced-motion: reduce) { .cell.upgraded, .reveal { animation: none; } }
+	@media (prefers-reduced-motion: reduce) { .cell.upgraded, .reveal, .reel.ladder-upgraded .ladder-reel-marker { animation: none; } }
 </style>

@@ -30,19 +30,20 @@ later[0][2] = 2;
 const sticky = [{ reel: 1, row: 1, factor: fraction(3), sticky: true }];
 
 export const twinStrikeSampleFrames = makeTwinImpactPreviewFrames(book([
-	{ type: 'roundStart', mode: 'twin_strike', cost: 300, goldenGridStart: before },
-	{ type: 'bonusStart', initialFreeSpins: 3, goldenGridStart: before },
-	{ type: 'bonusSpin', spin: { board: rows, golden_grid_before: before, golden_grid_after: after, ladder_active: true, ladder_after: fraction(2), strike_wild_factors: sticky } },
-	{ type: 'bonusSpin', spin: { board: rows, golden_grid_before: after, golden_grid_after: after, ladder_active: true, ladder_after: fraction(4), strike_wild_factors: sticky } },
-	{ type: 'bonusSpin', spin: { board: rows, golden_grid_before: after, golden_grid_after: later, ladder_active: true, ladder_after: fraction(8), strike_wild_factors: sticky } },
+	{ type: 'roundStart', mode: 'twin_strike', cost: 300 },
+	{ type: 'bonusStart', initialFreeSpins: 3 },
+	{ type: 'bonusSpin', spin: { board: rows, golden_grid_before: null, golden_grid_after: null, ladder_active: true, ladder_after: fraction(2), strike_wild_factors: sticky } },
+	{ type: 'bonusSpin', spin: { board: rows, golden_grid_before: null, golden_grid_after: null, ladder_active: true, ladder_after: fraction(4), strike_wild_factors: sticky } },
+	{ type: 'bonusSpin', spin: { board: rows, golden_grid_before: null, golden_grid_after: null, ladder_active: true, ladder_after: fraction(8), strike_wild_factors: sticky } },
 	{ type: 'roundSettle', payoutMultiplier: 6750 },
 ], 6750));
 
 export const mysterySampleFrames = makeTwinImpactPreviewFrames(book([
 	{ type: 'roundStart', mode: 'mystery_buy', cost: 485 },
 	{ type: 'mysteryReveal', result: 'Golden Impact', activationBoard: [
-		['H1', 'S', 'H3'], ['H1', 'H2', 'H3'], ['H1', 'S', 'H3'],
-		['H1', 'H2', 'H3'], ['H1', 'S', 'H3'],
+		['H1', 'H2', 'H3', 'H4', 'L1'],
+		['S', 'H2', 'S', 'H2', 'S'],
+		['H3', 'H4', 'L1', 'H2', 'L3'],
 	] },
 	{ type: 'bonusStart', initialFreeSpins: 2, goldenGridStart: before },
 	{ type: 'bonusSpin', spin: { board: rows, golden_grid_before: before, golden_grid_after: after, ladder_active: false } },
