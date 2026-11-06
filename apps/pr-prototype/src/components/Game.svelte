@@ -25,7 +25,7 @@
 	import FreeSpinCounter from './FreeSpinCounter.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
-	import I18nTest from './I18nTest.svelte';
+	import { TWIN_IMPACT_DEVELOPMENT_LABEL, TWIN_IMPACT_STUDIO } from '../game/twinImpactModes';
 
 	const context = getContext();
 
@@ -68,12 +68,12 @@
 
 		<UI>
 			{#snippet gameName()}
-				<UiGameName name="LINES GAME" />
+				<UiGameName name={TWIN_IMPACT_DEVELOPMENT_LABEL} />
 			{/snippet}
 			{#snippet logo()}
 				<Text
 					anchor={{ x: 1, y: 0 }}
-					text="ADD YOUR LOGO"
+					text={TWIN_IMPACT_STUDIO}
 					style={{
 						fontFamily: 'proxima-nova',
 						fontSize: REM * 1.5,
@@ -92,7 +92,6 @@
 		<FreeSpinOutro />
 		<Transition />
 
-		<I18nTest />
 	{/if}
 </App>
 

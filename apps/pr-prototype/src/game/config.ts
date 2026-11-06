@@ -1,3 +1,6 @@
+// This is still the upstream Lines SAMPLE configuration. Do not use it for
+// Twin Impact wallet play or production RTP disclosures. Production math books,
+// game events, and verified bet-mode pricing must replace it before release.
 export default {
 	providerName: 'sample_provider',
 	gameName: 'sample_lines',
