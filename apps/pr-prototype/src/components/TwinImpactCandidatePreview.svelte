@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { TwinImpactPreviewFrame } from '../game/twinImpactPreviewAdapter';
+	import TwinImpactSymbolLibrary from './TwinImpactSymbolLibrary.svelte';
 
 	type Props = {
 		frames: TwinImpactPreviewFrame[];
@@ -14,6 +15,8 @@
 
 	const positions = [0, 1, 2] as const;
 	const reels = [0, 1, 2, 3, 4] as const;
+	const originalDemoSymbols = new Set(['H1', 'H2', 'H3', 'H4', 'L1', 'L2', 'L3', 'L4', 'L5', 'W', 'SW', 'S']);
+	const symbolHref = (symbol: string | undefined) => symbol && originalDemoSymbols.has(symbol) ? `#icon-${symbol}` : null;
 	const frameDelayMs = (frame: TwinImpactPreviewFrame) => {
 		if (frame.type === 'mysteryReveal') return 2100;
 		if (frame.type === 'bonusSpin') return 1850;
@@ -48,11 +51,12 @@
 </script>
 
 <section class="preview" aria-label="Twin Impact candidate round preview">
+	<TwinImpactSymbolLibrary />
 	<header class="heading">
 		<div>
 			<p class="eyebrow">PUFF ROCKET / DEVELOPMENT PREVIEW</p>
-			<h2>TWIN IMPACT</h2>
-			<p class="subheading">Read-only sample events · no wallet or live wager</p>
+			<h2>TWIN <span>IMPACT</span></h2>
+			<p class="subheading">Catch the wilds. Feel the impact. · Read-only sample events</p>
 		</div>
 		<span class="warning">CANDIDATE-ONLY · NOT FOR UPLOAD</span>
 	</header>
@@ -73,14 +77,22 @@
 						{#each positions as row}
 							{@const level = gridAt(reel, row)}
 							{@const wild = strikeAt(reel, row)}
+							{@const symbol = current.board?.[reel]?.[row]}
+							{@const artHref = symbolHref(symbol)}
 							<div
 								class="cell"
 								class:golden={level > 1}
 								class:upgraded={upgradedAt(reel, row)}
+								class:strike-symbol={symbol === 'SW'}
+								class:scatter-symbol={symbol === 'S'}
 								aria-label={`Reel ${reel + 1} row ${row + 1}: ${current.board?.[reel]?.[row] ?? 'empty'}; Golden Grid ${level > 1 ? `${level} times` : 'inactive'}${wild ? `; Strike Wild ${wild.factor} times${wild.sticky ? ' sticky' : ''}` : ''}`}
 							>
 								{#if level > 1}<span class="golden-level">GOLDEN {level}×</span>{/if}
-								<span class="symbol">{current.board?.[reel]?.[row] ?? '·'}</span>
+								{#if artHref}
+									<svg class="symbol-art" viewBox="0 0 100 100" aria-hidden="true"><use href={artHref}></use></svg>
+								{:else}
+									<span class="symbol">{symbol ?? '·'}</span>
+								{/if}
 								{#if wild}
 									<span class="strike" class:sticky={wild.sticky}>{wild.sticky ? 'STICKY ' : ''}{wild.factor}× WILD</span>
 								{/if}
@@ -124,6 +136,7 @@
 	.heading { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
 	.eyebrow { margin: 0; color: #9faec9; font-size: 11px; font-weight: 750; letter-spacing: 0.18em; }
 	h2 { margin: 5px 0; font-size: clamp(25px, 4vw, 40px); letter-spacing: 0.08em; }
+	h2 span { color: #8deaff; text-shadow: 0 0 18px #54afff88; }
 	.subheading { margin: 0 0 22px; color: #a9bedc; font-size: 13px; }
 	.warning { padding: 9px 12px; border-radius: 9px; border: 1px solid #c48a3e; background: #533d21; color: #ffdc9c; font-size: 11px; font-weight: 750; }
 	.summary { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 17px; }
@@ -132,10 +145,13 @@
 	.playfield { display: grid; grid-template-columns: minmax(0, 1fr) 186px; gap: 18px; }
 	.reels { min-width: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 9px; padding: 13px; border: 3px solid #3a506e; border-radius: 14px; background: #090e1b; }
 	.reel { display: grid; grid-template-rows: repeat(3, minmax(93px, 1fr)); gap: 9px; }
-	.cell { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; border-radius: 12px; border: 2px solid #364d68; background: linear-gradient(140deg, #253956, #101a2c); }
+	.cell { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; border-radius: 12px; border: 2px solid #364d68; background: radial-gradient(ellipse at 50% 32%, #4b78b747, transparent 72%), linear-gradient(150deg, #202f4c, #0d1528); }
 	.cell.golden { border: 3px solid #ffc44e; background: linear-gradient(145deg, #5a4321, #1b2434); box-shadow: inset 0 0 18px #a87822a8, 0 0 14px #f7b62f65; }
+	.cell.strike-symbol:not(.golden) { border-color: #6feaff; box-shadow: inset 0 0 16px #37bdff66, 0 0 13px #7deaff66; }
+	.cell.scatter-symbol:not(.golden) { border-color: #f3a2ff; box-shadow: inset 0 0 16px #cf57ff66, 0 0 13px #f5a2ff66; }
 	.cell.upgraded { animation: upgrade 1.2s ease-out; }
 	.symbol { font-size: clamp(16px, 3vw, 31px); font-weight: 800; letter-spacing: 0.02em; }
+	.symbol-art { display: block; width: min(91%, 125px); height: 82%; overflow: visible; filter: saturate(1.12) contrast(1.04) drop-shadow(0 5px 8px #0008) drop-shadow(0 0 5px #82cdff22); }
 	.golden-level { position: absolute; top: 5px; left: 5px; font-size: 10px; font-weight: 900; color: #ffdb79; letter-spacing: 0.03em; }
 	.strike { position: absolute; bottom: 5px; right: 4px; padding: 4px 5px; border-radius: 5px; background: #722752; color: #ffd6f0; font-size: 9px; font-weight: 850; }
 	.strike.sticky { background: #3a205d; border: 1px solid #d0a5ff; }
